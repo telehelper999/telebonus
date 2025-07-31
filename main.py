@@ -156,7 +156,12 @@ async def run_telegram_bot():
         
         # Start the client
         if not await client.start():
-            logger.error("Failed to start Telegram client - exiting")
+            logger.error("❌ Failed to start Telegram client")
+            logger.error("🔧 Authentication required! Follow these steps:")
+            logger.error("1. Download auth_setup.py from your Replit project")
+            logger.error("2. Run it locally: python auth_setup.py")
+            logger.error("3. Upload the generated session file back to Replit")
+            logger.error("4. Redeploy on Render")
             bot_status['running'] = False
             bot_status['errors'] += 1
             return
