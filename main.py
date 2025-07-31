@@ -13,6 +13,13 @@ from threading import Thread
 try:
     from flask import Flask, jsonify
 except ImportError:
+    # Initialize logger first before using it
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[logging.StreamHandler(sys.stdout)]
+    )
+    logger = logging.getLogger(__name__)
     logger.warning("Flask not available - using simple HTTP server for health checks")
     Flask = None
     jsonify = None
