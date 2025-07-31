@@ -1,0 +1,30 @@
+{
+  "source_groups": [
+    -1001992047801,
+    -1001537705675,
+    -1002572686648
+  ],
+  "target_groups": [
+     -1002830799357
+  ],
+  "target_topics": {
+    "-1002830799357": {
+      "topic_name": "Rain Alerts",
+      "topic_id": 89057
+    }
+  },
+  "filters": {
+    "keywords": [],
+    "enabled": false,
+    "case_sensitive": false,
+    "group_specific": {}
+  },
+  "text_replacements": {},
+  "group_specific_replacements": {},
+  "settings": {
+    "forward_delay": 0.1,
+    "max_retries": 3,
+    "enable_media_forwarding": true,
+    "enable_text_processing": true
+  }
+}
