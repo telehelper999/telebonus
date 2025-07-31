@@ -4,6 +4,7 @@ Telegram client wrapper for relay bot functionality
 
 import asyncio
 import logging
+import os
 from typing import Optional
 from telethon import TelegramClient, events
 from telethon.errors import (
@@ -34,9 +35,25 @@ class TelegramRelayClient:
     async def start(self):
         """Start the Telegram client and begin monitoring."""
         try:
-            self.client = TelegramClient('relay_bot_session', self.api_id, self.api_hash)
-            logger.info("Connecting to Telegram...")
-            await self.client.connect()
+            # Clean up corrupted session if it exists
+            session_file = 'relay_bot_session.session'
+            if os.path.exists(session_file):
+                try:
+                    # Try to create client with existing session
+                    self.client = TelegramClient('relay_bot_session', self.api_id, self.api_hash)
+                    logger.info("Connecting to Telegram...")
+                    await self.client.connect()
+                except Exception as session_error:
+                    logger.warning(f"Session file corrupted ({session_error}), removing and creating new session")
+                    await self.client.disconnect() if self.client else None
+                    os.remove(session_file)
+                    # Create new client
+                    self.client = TelegramClient('relay_bot_session', self.api_id, self.api_hash)
+                    await self.client.connect()
+            else:
+                self.client = TelegramClient('relay_bot_session', self.api_id, self.api_hash)
+                logger.info("Connecting to Telegram...")
+                await self.client.connect()
 
             if not await self.client.is_user_authorized():
                 logger.error("User not authorized. Please run: python simple_auth.py")
@@ -276,6 +293,10 @@ class TelegramRelayClient:
 
     async def run_until_disconnected(self):
         """Run the client until disconnected with automatic reconnection."""
+        if not self.client:
+            logger.error("❌ Client not initialized - cannot run")
+            return
+            
         logger.info("🔄 Starting message monitoring loop...")
         while True:
             try:
