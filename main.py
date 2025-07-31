@@ -155,7 +155,12 @@ async def run_telegram_bot():
         )
         
         # Start the client
-        await client.start()
+        if not await client.start():
+            logger.error("Failed to start Telegram client - exiting")
+            bot_status['running'] = False
+            bot_status['errors'] += 1
+            return
+            
         logger.info("Telegram bot started successfully on Render")
         
         # Keep running
