@@ -56,7 +56,12 @@ class TelegramRelayClient:
                 await self.client.connect()
 
             if not await self.client.is_user_authorized():
-                logger.error("User not authorized. Please run: python simple_auth.py")
+                logger.error("❌ User not authorized!")
+                logger.error("🔧 To fix this issue:")
+                logger.error("1. Run 'python auth_setup.py' locally on your computer")
+                logger.error("2. Upload the generated 'relay_bot_session.session' file to Replit")
+                logger.error("3. Redeploy your bot on Render")
+                logger.error("📖 See MAC_SETUP_GUIDE.md for detailed instructions")
                 return False
 
             logger.info("User already authorized, proceeding...")
@@ -326,4 +331,11 @@ class TelegramRelayClient:
                         
                 except Exception as reconnect_error:
                     logger.error(f"Reconnection failed: {reconnect_error}")
+                    
+                    # If authorization is lost, don't keep trying
+                    if "authorization" in str(reconnect_error).lower():
+                        logger.error("🔐 Authorization lost - session file may be invalid")
+                        logger.error("Please re-authenticate using auth_setup.py")
+                        break
+                        
                     await asyncio.sleep(60)  # Wait longer before next attempt
